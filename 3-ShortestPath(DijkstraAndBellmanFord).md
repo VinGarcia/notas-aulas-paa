@@ -50,19 +50,18 @@ Este algoritmo utiliza dois conjuntos de nós:
 - Adjacentes
 
 O conjunto de visitados vai incluir todos os nós para os quais nós
-já temos a distancia ótima. O conjunto de não visitados vai incluir
-apenas os nós que fazem aresta com os já visitados (e não necessariamente
-todos os nós não visitados do grafo).
+já temos a distancia ótima. O conjunto de adjacentes vai incluir
+apenas os nós que fazem aresta com os já visitados.
 
 O algoritmo funciona usando um conceito interessante que consiste
-em escolhar de forma cuidadosa um item do grupo de não visitados
-e inclui-lo no conjunto de nós visitados.
+em escolher de forma cuidadosa um item do grupo de adjacentes
+e incluí-lo no conjunto de nós visitados.
 E a cada nova inclusão recalcular as estimativas de distancia dos
-nós adjacentes ao que acabou de ser incluido.
+nós adjacentes ao que acabou de ser incluído.
 
 Esse mecanismo de escolha por sí só garante que a estimativa
 de distancia desse nó recentemente incluido será a menor distancia
-possível da raiz, e não é nada muito complexo:
+possível da raiz, e não é muito complexo:
 Escolhe-se sempre o nó do conjunto de adjacentes com a menor
 distancia estimada até então.
 
@@ -71,7 +70,7 @@ A atualização das distancias é feita sempre considerando a menor
 distancia:
 
 ```python
-nova_dist = distancia_de(P) + peso_da_aresta(P -> NovoNó)
+nova_dist = distancia_de(P) + peso_da_aresta(P, No_Adjacente)
 if (nova_dist < dist_atual) dist_atual = nova_dist
 ```
 
@@ -90,8 +89,7 @@ def Dijkstra(G, root):
   # Distance list:
   d = []
   # Ancestor list:
-  # (Esse vetor vai ser usado para recuperar os caminhos mínimos
-  #  e não apenas as distancias mínimas)
+  # (its an optional vector for recovering the optimal paths)
   a = []
   
   for v in G.V:
@@ -129,7 +127,7 @@ def Dijkstra(G, root):
 
 Ao fim da execução desse algoritmo, o vetor `d`, vai conter as distancias
 para cada nó, e com o vetor `a` será possível reconstruir o caminho ótimo
-de cada nó voltando para o nó raiz.
+de cada nó até o nó raiz.
 
 Uma observação importante é que normalmente se utiliza um `Heap` para representar
 o conjunto ordenado, e isso influencia diretamente na complexidade do algoritmo.
