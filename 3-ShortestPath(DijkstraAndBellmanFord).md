@@ -60,14 +60,16 @@ E a cada nova inclusão recalcular as estimativas de distancia dos
 nós adjacentes ao que acabou de ser incluído.
 
 Esse mecanismo de escolha por sí só garante que a estimativa
-de distancia desse nó recentemente incluido será a menor distancia
+de distancia desse nó recentemente incluído será a menor distancia
 possível da raiz, e não é muito complexo:
 Escolhe-se sempre o nó do conjunto de adjacentes com a menor
-distancia estimada até então.
+distancia estimada até então. Isso garante a otimalidade devido
+à **desigualdade triangular** discutida acima: Não seria possível
+chegar neste nó por nenhum outro caminho que fosse mais curto.
 
 Uma última observação antes de mostrar o algoritmo.
-A atualização das distancias é feita sempre considerando a menor
-distancia:
+A atualização das distancias é feita com a regra do **relaxamento**,
+i.e. guardando sempre as distancias menores:
 
 ```python
 nova_dist = distancia_de(P) + peso_da_aresta(P, No_Adjacente)
