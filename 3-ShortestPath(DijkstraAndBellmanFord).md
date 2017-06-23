@@ -12,7 +12,7 @@ menor caminho (menor peso) do vertice S para o V.
 1. Optimal substructure:
    O melhor caminho ótimo é composto de subcaminhos ótimos.
 
-2. O menor caminho satisfaz a inegualdade de triangulo:  
+2. O menor caminho satisfaz a desigualdade triangular:  
    Se tenho o caminho mínimo de (a,b) ele deve ser <=
    a soma do caminho mínimo de (a,c) + (c,b) para um vertice c qualquer.
 
