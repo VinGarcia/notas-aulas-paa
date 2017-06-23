@@ -47,30 +47,51 @@ em haverem pesos negativos nas arestas.
 Este algoritmo utiliza dois conjuntos de nós:
 
 - Visitados
-- Não visitados
+- Adjacentes
 
-Todos os nós começam com a distancia para a raiz = infinito,
-com exceção do nó raiz cuja distancia é 0.
+O conjunto de visitados vai incluir todos os nós para os quais nós
+já temos a distancia ótima. O conjunto de não visitados vai incluir
+apenas os nós que fazem aresta com os já visitados (e não necessariamente
+todos os nós não visitados do grafo).
 
-A cada iteração o algoritmo escolhe do conjunto de nós não visitados
-o nó mais próximo da raiz `P` e então para cada vizinho de `P`
-calcula a distância à raiz considerando um caminho que passe por `P`.
+O algoritmo funciona usando um conceito interessante que consiste
+em escolhar de forma cuidadosa um item do grupo de não visitados
+e inclui-lo no conjunto de nós visitados.
+E a cada nova inclusão recalcular as estimativas de distancia dos
+nós adjacentes ao que acabou de ser incluido.
 
-Se o caminho encontrado for melhor que o caminho encontrado
-anteriormente o caminho antigo é substituido.
+Esse mecanismo de escolha por sí só garante que a estimativa
+de distancia desse nó recentemente incluido será a menor distancia
+possível da raiz, e não é nada muito complexo:
+Escolhe-se sempre o nó do conjunto de adjacentes com a menor
+distancia estimada até então.
 
-`P` é então adicionado ao conjunto de nós visitados e o algoritmo
-continua para a próxima iteração.
+Uma última observação antes de mostrar o algoritmo.
+A atualização das distancias é feita sempre considerando a menor
+distancia:
 
-O algoritmo pára quando não houverem mais nós a serem visitados.
+```python
+nova_dist = distancia_de(P) + peso_da_aresta(P -> NovoNó)
+if (nova_dist < dist_atual) dist_atual = nova_dist
+```
+
+O que significa que se um nó adjacente puder ser alcançado por 2 ou mais nós
+visitados, nós escolheremos sempre o menor caminho até ele.
+
+A figura abaixo ilustra bem o funcionamento do algoritmo, cada nó vermelho
+está no conjunto de nós visitados:
 
 ![Demonstração Dijkstra](images/dijkstra.gif "animação representando a execução")
+
+Agora o algoritmo em pseucódigo:
 
 ```python
 def Dijkstra(G, root):
   # Distance list:
   d = []
   # Ancestor list:
+  # (Esse vetor vai ser usado para recuperar os caminhos mínimos
+  #  e não apenas as distancias mínimas)
   a = []
   
   for v in G.V:
@@ -82,20 +103,36 @@ def Dijkstra(G, root):
   # The root vertex start with distance 0:
   d[root] = 0
   
-  # Copy the vertex list:
-  nodes = G.V
-  nodes.remove(root)
+  # Creates 2 sorted sets where the sorting criteria
+  # is the distance from the root node:
+  visitados = novo ConjuntoOrdenado()
+  adjacentes = novo ConjuntoOrdenado()
   
-  while len(nodes) > 0:
-    v = nodes.extractCloserNode()
+  # Add root to the adjacents set:
+  adjacentes.add(root)
+  
+  while len(adjacentes) > 0:
+    v = adjacentes.extractCloserNode()
     
-    # Update the distances to all
-    # nodes adjacent to v:
+    # For each node adjacent to v:
     for u in v.adjacents():
       if d[u] > d[v] + w(v,u):
         d[u] = d[v] + w(v,u)
         a[u] = v
+        
+      # Now manage the adjacentes set:
+      if u in adjacents:
+        adjacents.update_position(u)
+      else:
+        adjacents.add(u)
 ```
+
+Ao fim da execução desse algoritmo, o vetor `d`, vai conter as distancias
+para cada nó, e com o vetor `a` será possível reconstruir o caminho ótimo
+de cada nó voltando para o nó raiz.
+
+Uma observação importante é que normalmente se utiliza um `Heap` para representar
+o conjunto ordenado, e isso influencia diretamente na complexidade do algoritmo.
 
 Complexidade no tempo:
 
